@@ -26,6 +26,23 @@ using aidl::android::hardware::health::charger::ChargerCallback;
 using aidl::android::hardware::health::charger::ChargerModeMain;
 #endif
 
+namespace aidl::android::hardware::health {
+class HealthImpl : public Health {
+  public:
+    using Health::Health;
+
+  protected:
+    // The Xiaomi battery driver fills time_to_full_now with a capacity-derived
+    // number (missing levels * 75200 or 150400), not seconds. Report it as
+    // unknown so the framework falls back to its own charge step estimate.
+    void UpdateHealthInfo(HealthInfo* health_info) override {
+        health_info->batteryChargeTimeToFullNowSeconds = -1;
+    }
+};
+}  // namespace aidl::android::hardware::health
+
+using aidl::android::hardware::health::HealthImpl;
+
 static constexpr const char* gInstanceName = "default";
 static constexpr std::string_view gChargerArg{"--charger"};
 
@@ -47,7 +64,7 @@ int main(int argc, char** argv) {
     // make a default health service
     auto config = std::make_unique<healthd_config>();
     ::android::hardware::health::InitHealthdConfig(config.get());
-    auto binder = ndk::SharedRefBase::make<Health>(gInstanceName, std::move(config));
+    auto binder = ndk::SharedRefBase::make<HealthImpl>(gInstanceName, std::move(config));
 
     if (argc >= 2 && argv[1] == gChargerArg) {
 #if !CHARGER_FORCE_NO_UI
