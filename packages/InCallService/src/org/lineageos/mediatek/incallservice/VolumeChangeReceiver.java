@@ -33,7 +33,8 @@ public class VolumeChangeReceiver extends BroadcastReceiver {
             if (volumeIndex == -1)
                 volumeIndex = mAudioManager.getStreamVolume(AudioManager.STREAM_VOICE_CALL);
 
-            GainUtils.setGainLevel(callDevice.getPort().type(), volumeIndex, AudioSystem.STREAM_VOICE_CALL);
+            GainUtils.setGainLevel(callDevice.getPort().type(),
+                    GainUtils.toVendorIndex(mAudioManager, volumeIndex), AudioSystem.STREAM_VOICE_CALL);
         }
     }
 
