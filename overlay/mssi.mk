@@ -42,6 +42,9 @@ PRODUCT_PACKAGES += \
 endif
 endif
 
+BOARD_SHIPPING_API_LEVEL := $(PRODUCT_SHIPPING_API_LEVEL)
+
+ifneq (,$(BOARD_SHIPPING_API_LEVEL))
 ifneq ($(call math_gt_or_eq,$(BOARD_SHIPPING_API_LEVEL),34),)
 PRODUCT_PACKAGES += \
     MssiWifiQoSOverlay
@@ -51,4 +54,5 @@ ifneq ($(call math_gt_or_eq,$(BOARD_SHIPPING_API_LEVEL),202504),)
 PRODUCT_PACKAGES += \
     MssiWifiCountryOverlay \
     MssiWifiOweOverlay
+endif
 endif
